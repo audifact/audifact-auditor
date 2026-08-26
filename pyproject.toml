@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "audifact-auditor"
+version = "0.1.0"
+description = "Independent verification of Audifact public ledger snapshots, signatures, and OTS anchors"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = [
+    "requests>=2.31.0",
+    "PyNaCl>=1.5.0",
+    "opentimestamps>=0.4.5",
+]
+
+[project.urls]
+Homepage = "https://github.com/audifact/audifact-auditor"
+Repository = "https://github.com/audifact/audifact-auditor"
+Documentation = "https://github.com/audifact/audifact-auditor#readme"
+
+[project.scripts]
+audifact-auditor = "audifact_auditor.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["audifact_auditor*"]
