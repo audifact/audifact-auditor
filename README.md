@@ -10,6 +10,9 @@ Independent verification of [Audifact](https://audifact.io) **public ledger** ar
 This package does **not** depend on the private Audifact server codebase.  
 It is the verify-side counterpart to [audifact-sdk](https://github.com/audifact/audifact-sdk) (which **writes** events).
 
+**Public repo:** https://github.com/audifact/audifact-auditor  
+**Site docs:** [Verify OTS anchors](https://audifact.io/docs/verify-ots) (includes auditor CLI) · [FAQ](https://audifact.io/faq)
+
 ## Requirements
 
 - Python 3.10+
