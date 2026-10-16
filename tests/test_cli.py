@@ -9,6 +9,15 @@ def test_parser_verify():
     assert args.base_url == "https://audifact.io"
 
 
+def test_parser_fetch():
+    p = build_parser()
+    args = p.parse_args(["fetch", "./public_ledger", "--max-seq", "5"])
+    assert args.command == "fetch"
+    assert args.dest == "./public_ledger"
+    assert args.base_url == "https://audifact.io"
+    assert args.max_seq == 5
+
+
 def test_cli_missing_keys_exits_2():
     try:
         main(["verify", "/tmp/nope"])

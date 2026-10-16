@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.1
+
+### Added
+
+- `audifact-auditor fetch <dir>` — download `public_ledger/` (snapshots, anchors, OTS) from `https://audifact.io/public_ledger/`.
+- README: install pin `@v0.1.1`, fetch + verify quickstart.
+
 ## 0.1.0
 
 ### Added

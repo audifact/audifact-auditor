@@ -6,6 +6,7 @@ import argparse
 import sys
 
 from audifact_auditor import __version__
+from audifact_auditor.fetch import fetch_public_ledger
 from audifact_auditor.verify_ledger import verify_public_ledger
 from audifact_auditor.verify_snapshot import verify_snapshot_file
 
@@ -63,6 +64,28 @@ def cmd_verify_snapshot(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_fetch(args: argparse.Namespace) -> int:
+    try:
+        summary = fetch_public_ledger(
+            args.dest,
+            base_url=args.base_url,
+            max_seq=args.max_seq,
+        )
+    except Exception as e:
+        _fail(str(e))
+        return 1
+
+    _ok(f"dest={summary['dest']}")
+    _ok(f"snapshots_downloaded={summary['snapshots_downloaded']}")
+    _ok(f"anchors_downloaded={summary['anchors_downloaded']}")
+    _ok(f"ots_downloaded={summary['ots_downloaded']}")
+    _ok(f"latest_snapshot_seq={summary['latest_snapshot_seq']}")
+    if summary.get("latest_ledger_hash"):
+        _ok(f"latest_ledger_hash={summary['latest_ledger_hash']}")
+    _ok("public ledger fetched")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="audifact-auditor",
@@ -101,6 +124,27 @@ def build_parser() -> argparse.ArgumentParser:
     p_snap.add_argument("--base-url", help="Site base URL for signing keys")
     p_snap.add_argument("--keys", help="Path to signing_keys.json")
     p_snap.set_defaults(func=cmd_verify_snapshot)
+
+    p_fetch = sub.add_parser(
+        "fetch",
+        help="Download public_ledger/ from a hosted Audifact site",
+    )
+    p_fetch.add_argument(
+        "dest",
+        help="Directory to write (created if missing)",
+    )
+    p_fetch.add_argument(
+        "--base-url",
+        default="https://audifact.io",
+        help="Site base URL (default: https://audifact.io)",
+    )
+    p_fetch.add_argument(
+        "--max-seq",
+        type=int,
+        default=None,
+        help="Stop after this snapshot_seq (for smoke tests)",
+    )
+    p_fetch.set_defaults(func=cmd_fetch)
 
     return parser
 

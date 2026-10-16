@@ -16,15 +16,14 @@ It is the verify-side counterpart to [audifact-sdk](https://github.com/audifact/
 ## Requirements
 
 - Python 3.10+
-- A copy of a published `public_ledger/` directory (rsync, download, or local mount)
-- Signing keys: online from the site, or offline `signing_keys.json` next to the ledger
+- Network access to `https://audifact.io` (or a local `public_ledger/` copy)
 
 ## Installation
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install "git+https://github.com/audifact/audifact-auditor.git@v0.1.0"
+pip install "git+https://github.com/audifact/audifact-auditor.git@v0.1.1"
 ```
 
 Local (monorepo nested checkout):
@@ -37,16 +36,24 @@ pip install -e .
 ## Quick start
 
 ```bash
-# Full public ledger (online keys from production)
+# 1) Download the published public ledger (snapshots + anchors + OTS proofs)
+audifact-auditor fetch ./public_ledger
+
+# Smoke-test with a short chain (optional):
+# audifact-auditor fetch ./public_ledger --max-seq 5
+
+# 2) Verify the full tree (keys fetched from the site)
 audifact-auditor verify ./public_ledger --base-url https://audifact.io
 
-# Offline keys
+# Offline keys (also included in the fetch)
 audifact-auditor verify ./public_ledger --keys ./public_ledger/signing_keys.json
 
 # Single snapshot
 audifact-auditor verify-snapshot ./public_ledger/000000000002.json \
   --base-url https://audifact.io
 ```
+
+Published files are also browsable at https://audifact.io/public_ledger/ (e.g. `manifest.json`, `000000000649.json`).
 
 Exit code `0` = verified. Non-zero = failure (message on stderr/stdout).
 

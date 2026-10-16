@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "audifact-auditor"
-version = "0.1.0"
+version = "0.1.1"
 description = "Independent verification of Audifact public ledger snapshots, signatures, and OTS anchors"
 readme = "README.md"
 license = { text = "MIT" }
