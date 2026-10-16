@@ -40,7 +40,6 @@ def fetch_public_ledger(
     root = base_url.rstrip("/") + "/public_ledger"
 
     manifest = _get_json(f"{root}/manifest.json")
-    _write(dest / "manifest.json", json.dumps(manifest, indent=2).encode() + b"\n")
 
     try:
         keys_bytes = _get_bytes(f"{root}/signing_keys.json")
@@ -49,20 +48,27 @@ def fetch_public_ledger(
         # Online verify can still use GET /ledger/signing-keys
         pass
 
-    latest = int(manifest.get("latest_snapshot_seq") or 0)
-    if latest < 1:
+    tip = int(manifest.get("latest_snapshot_seq") or 0)
+    if tip < 1:
         raise Exception("manifest.json missing latest_snapshot_seq")
+    latest = tip
     if max_seq is not None:
-        latest = min(latest, int(max_seq))
+        latest = min(tip, int(max_seq))
 
     downloaded = 0
     anchors = 0
     ots = 0
+    last_ledger_hash = None
     for seq in range(1, latest + 1):
         name = f"{seq:012d}.json"
         data = _get_bytes(f"{root}/{name}")
         _write(dest / name, data)
         downloaded += 1
+        try:
+            snap = json.loads(data.decode())
+            last_ledger_hash = snap.get("ledger_hash") or last_ledger_hash
+        except json.JSONDecodeError:
+            pass
 
         try:
             a = _get_bytes(f"{root}/anchors/{name}")
@@ -79,6 +85,18 @@ def fetch_public_ledger(
         except HTTPError as e:
             if e.code != 404:
                 raise
+
+    # When --max-seq truncates, rewrite tip fields so local verify succeeds.
+    if latest < tip:
+        manifest = dict(manifest)
+        manifest["latest_snapshot_seq"] = latest
+        manifest["latest_snapshot_file"] = f"{latest:012d}.json"
+        if last_ledger_hash:
+            manifest["latest_ledger_hash"] = last_ledger_hash
+        manifest["truncated_fetch"] = True
+        manifest["source_latest_snapshot_seq"] = tip
+
+    _write(dest / "manifest.json", json.dumps(manifest, indent=2).encode() + b"\n")
 
     return {
         "dest": str(dest),

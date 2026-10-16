@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2
+
+### Fixed
+
+- `fetch --max-seq N` rewrites local `manifest.json` tip fields so a truncated tree still verifies.
+
 ## 0.1.1
 
 ### Added

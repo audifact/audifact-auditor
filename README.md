@@ -23,7 +23,7 @@ It is the verify-side counterpart to [audifact-sdk](https://github.com/audifact/
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install "git+https://github.com/audifact/audifact-auditor.git@v0.1.1"
+pip install "git+https://github.com/audifact/audifact-auditor.git@v0.1.2"
 ```
 
 Local (monorepo nested checkout):
