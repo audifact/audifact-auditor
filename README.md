@@ -71,6 +71,13 @@ Exit code `0` = verified. Non-zero = failure (message on stderr/stdout).
 - Recomputing per-event hash chains from the private DB
 - Ingest / API keys (use **audifact-sdk** for writes)
 
+## Examples
+
+- [`examples/code-execution/`](examples/code-execution/) — attested Cloudflare
+  `code_execution` script bytes + `verify.py` digest check (see
+  [docs](https://audifact.io/docs/code-execution)).
+
 ## License
 
 MIT
+
