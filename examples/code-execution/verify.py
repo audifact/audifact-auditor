@@ -5,7 +5,9 @@ No network, no secrets. Run from this directory:
 
   python3 verify.py
 
-Expected digests match the public proof pages linked in README.md.
+verify.py confirms the published result object matches the receipt's
+result_sha256. Raw Cloudflare response bodies stay private on the ledger and
+are bound by the per-call digests inside result.raw_response_sha256.
 """
 from __future__ import annotations
 
@@ -14,16 +16,31 @@ import json
 from pathlib import Path
 
 EXPECTED_SCRIPT_SHA256 = (
-    "3a925ca724b4a3c398fb49d78e92069a0458199fcff35feda02fec8775f1a7da"
+    "7ff25ab44dbbe71a2b2bc2600041250ef292ab1c74daba54bd5c9bedeefd1da6"
 )
 EXPECTED_RESULT_SHA256 = (
-    "9d3d17537dba554d367f0724ead85641960552380fbb343d2f4d3c3eba794ee6"
+    "7a7f68196f834e6d6356221863a16a9aa2b8d0f75b2ccfb8a1590c47221d4d2b"
 )
 
 # Live outcome result object (canonical JSON hashed below).
+# Includes sorted raw_response_sha256 entries that bind private response bodies.
 RESULT = {
     "ddos_phase": "ddos_l7",
     "ddos_rule_count": 148,
+    "raw_response_sha256": [
+        {
+            "call": "list_zone_rulesets",
+            "sha256": "e110c26b7f095715623cbaba02dff325f55756a5486a7402672445e62fc41fff",
+        },
+        {
+            "call": "ruleset_ddos_l7",
+            "sha256": "503ad6d235041e1d535ee783519219acffcdbec6df3c58e5fbd9d4d31da2c509",
+        },
+        {
+            "call": "ruleset_http_request_firewall_managed",
+            "sha256": "36ddb91694ef0550a69df0699ead85013a5b5622911ecbc51622625fc25ecd6c",
+        },
+    ],
     "source": "zone_managed_rulesets",
     "waf_phase": "http_request_firewall_managed",
     "waf_rule_count": 42,
@@ -45,11 +62,6 @@ def main() -> None:
     )
     assert result_sha256 == EXPECTED_RESULT_SHA256, (
         f"result_sha256 mismatch: got {result_sha256}"
-    )
-    assert canonical == (
-        '{"ddos_phase":"ddos_l7","ddos_rule_count":148,'
-        '"source":"zone_managed_rulesets",'
-        '"waf_phase":"http_request_firewall_managed","waf_rule_count":42}'
     )
 
     print("ok", script_sha256, result_sha256)

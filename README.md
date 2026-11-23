@@ -74,7 +74,8 @@ Exit code `0` = verified. Non-zero = failure (message on stderr/stdout).
 ## Examples
 
 - [`examples/code-execution/`](examples/code-execution/) — attested Cloudflare
-  `code_execution` script bytes + `verify.py` digest check (see
+  `code_execution` script (`cloudflare_live.py`) with `raw_response_sha256`
+  binding + `verify.py` digest check (see
   [docs](https://audifact.io/docs/code-execution)).
 
 ## License
